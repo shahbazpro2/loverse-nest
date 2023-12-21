@@ -6,12 +6,12 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model User{
-  id Int @default(autoincrement()) @id
+  id   String  @id @default(auto()) @map("_id") @db.ObjectId
   email String @unique
   name String?
   image String?
@@ -20,39 +20,43 @@ model User{
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   userImages GeneratedImages[]
+  payments Payments[]
 }
 
 model GeneratedImages{
-  id Int @default(autoincrement()) @id
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
   image String
-  user User @relation(fields: [userId], references: [id])
-  userId Int
+  user  User   @relation(fields: [userId], references: [id])
+  userId String @db.ObjectId
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model ServiceImages{
-  id Int @default(autoincrement()) @id
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
   image String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Plans{
-  id Int @default(autoincrement()) @id
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
   title String
-  price Int
+  price Float
   description String
   target String
   features String[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  payments Payments[]
 }
 
 model Payments{
-  id Int @default(autoincrement()) @id
-  userId Int
-  planId Int
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  user User @relation(fields: [userId], references: [id])
+  userId String @db.ObjectId
+  plan Plans @relation(fields: [planId], references: [id])
+  planId String @db.ObjectId
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
